@@ -184,83 +184,83 @@ db.getCollection('universities').find({},{name: 1, accreditation: 1, _id: 0 });
 //
 //b.	Select university without coordinates. Show only Address information. 
 //
-db.universities.find(
-    {
-        "address.coordinates":
-        {
-            $exists:false
-        }
-     },
-     {
-         address:1, _id:0
-      }
+db.universities.find(
+    {
+        "address.coordinates":
+        {
+            $exists:false
+        }
+     },
+     {
+         address:1, _id:0
+      }
 );
 
 
 //
 //c.	Select university with State = “MA” and zipcode not equal to “27897”. Show id, name, state, zipcode
 //
-db.universities.find(
-    {
-        "address.state": "MA", 
-        "address.zipcode": 
-            {
-                $nin: ["27897"]
-             }
-     },
-     {
-         _id:1, 
-         name:1, 
-         "address.state":1, 
-         "address.zipcode":1
-     }
+db.universities.find(
+    {
+        "address.state": "MA", 
+        "address.zipcode": 
+            {
+                $nin: ["27897"]
+             }
+     },
+     {
+         _id:1, 
+         name:1, 
+         "address.state":1, 
+         "address.zipcode":1
+     }
 )
 
 
 //
 //d.	Select users with Date of Birth more than (>) 1980 year and less than current date. Show only Date of Birth 
 //
-db.users.find(
-     {
-         "DateOfBirth": 
-            {
-                $gt: new ISODate("1980-01-01T00:00:00.000Z")
-             }
-      }, 
-      {
-          DateOfBirth:1, _id:0
-       }
+db.users.find(
+     {
+         "DateOfBirth": 
+            {
+                $gt: new ISODate("1980-01-01T00:00:00.000Z")
+             }
+      }, 
+      {
+          DateOfBirth:1, _id:0
+       }
 );
 
 
 //
 //e.	Change course name and delete all other information (university_id, users) for course, which contains only students. 
 //
-db.courses.update(
-       {
-           "users.role": 
-            {
-                $nin: ["instructor", "admin"]
-            }
-       }, 
-       {$set: 
-           {
-               "name": "Pervaki"
-            }
-        }
-);
-        
+db.courses.update(
+       {
+           "users.role": 
+            {
+                $nin: ["instructor", "admin"]
+            }
+       }, 
+       {$set: 
+           {
+               "name": "Pervaki"
+            }
+        }
+);
         
-db.courses.update(
-        {
-            name: "Pervaki"
-         }, 
-         {
-             $unset: 
-             {
-                 "iniversities_id:": 1, "users": 1
-             }
-         }
+        
+db.courses.update(
+        {
+            name: "Pervaki"
+         }, 
+         {
+             $unset: 
+             {
+                 "iniversities_id:": 1, "users": 1
+             }
+         }
 );
 
 //
@@ -271,129 +271,141 @@ db.courses.find().sort({users:-1}).limit(1)
 //
 //g.	*Select user with the longest MiddleName. Show _id, MiddleName, length. 
 //
-db.users.aggregate(
-         [
-         {
-             $project:
-             {
+db.users.aggregate(
+         [
+         {
+             $project:
+             {
                  "MiddleName": 1,
-                 "lenght": 
-                 {
-                     $strLenCP: "$MiddleName" 
-                  }
-              }
+                 "lenght": 
+                 {
+                     $strLenCP: "$MiddleName" 
+                  }
+              }
           },
-          {
-              $match: 
-              {
-                  MiddleName: 
-                  {
-                      $exists:true
-                   }
-               }
+          {
+              $match: 
+              {
+                  MiddleName: 
+                  {
+                      $exists:true
+                   }
+               }
            },
-           {
-               $sort: 
-               {
-                   "lenght":-1
-                }
+           {
+               $sort: 
+               {
+                   "lenght":-1
+                }
            },
-           {
-               $limit: 1
-            }
-         ]
+           {
+               $limit: 1
+            }
+         ]
 );
 
 //
 //h.	Update only the course name, which contains every user role. 
 //
-db.courses.updateMany(
-            {
-                $and: 
-[
-                {
-                    "users.role": "instructor"
-                }, 
-                {
-                    "users.role": "admin"
-                }, 
-                {
-                    "users.role": "student"
-                }
-]
-            }, 
-            {
-                $set: 
-                {
-                    "name": "Kafedra"
-                }
-            }
+db.courses.updateMany(
+            {
+                $and: 
+[
+                {
+                    "users.role": "instructor"
+                }, 
+                {
+                    "users.role": "admin"
+                }, 
+                {
+                    "users.role": "student"
+                }
+]
+            }, 
+            {
+                $set: 
+                {
+                    "name": "Kafedra"
+                }
+            }
 );
 
 
 //
 //i.	Replace User document with Name = “Pavel” (insert your values and pay attention for the new structure. Use .find() before replacement and compare values after)
 //
-db.users.find(
-            {
-                FirstName: "Pavel"
-            }, 
-            {
-            }
-);
+db.users.find(
+            {
+                FirstName: "Pavel"
+            }, 
+            {
+            }
+);
 
-db.users.replaceOne(
-            {
-                "FirstName": "Pavel"
-            },
-            {
-                "FirstName": "NewPavel", 
-                "LastName": "Makasinov", 
-                "MiddleName": "MetropolitGudinovich", 
-                "DateOfBirth": ISODate("2018-01-25T00:00:00Z")
-            },
-            {
-                upsert: true
-            }
-);
-    
-db.users.find(
-            {
-                FirstName: "NewPavel"
-            }
+db.users.replaceOne(
+            {
+                "FirstName": "Pavel"
+            },
+            {
+                "FirstName": "NewPavel", 
+                "LastName": "Makasinov", 
+                "MiddleName": "MetropolitGudinovich", 
+                "DateOfBirth": ISODate("2018-01-25T00:00:00Z")
+            },
+            {
+                upsert: true
+            }
+);
+    
+db.users.find(
+            {
+                FirstName: "NewPavel"
+            }
 );
 //
 //j.	Delete user which has only LastName by 2 ways (use delete()and remove() commands)(i.e. MiddleName, Date of Birth, First Name are null).
-//
+//
+
+db.users.deleteOne(
+    {
+        "FirstName": 
+        {
+            "$in": [null], 
+            $exists: false
+         }
+     }, 
+     {
+         "MiddleName": 
+         {
+             "$in" : [null], 
+             $exists: false
+          }
+      }, 
+      {
+          "DateOfBirth": 
+          {
+              "$in" : [null], 
+              $exists: false
+          }
+       }, 
+       {
+           "LastName": 
+           {
+               "$in" : [null], 
+               $exists: true
+           }
+        }
+);
+        
 
-db.users.deleteOne(
-    {
-        "FirstName": 
+
+db.users.remove( 
         {
-            "$in": [null], 
-            $exists: false
-         }
-     }, 
-     {
-         "MiddleName": 
-         {
-             "$in" : [null], 
-             $exists: false
-          }
-      }, 
-      {
           "DateOfBirth": 
           {
               "$in" : [null], 
               $exists: false
           }
-       }, 
-       {
-           "LastName": 
-           {
-               "$in" : [null], 
-               $exists: true
-           }
         }
-);
-
+)
+
